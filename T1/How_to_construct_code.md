@@ -21,7 +21,7 @@ The first time you read this problem description, it is natural to come up with 
 
 This problem is very simple, so some students may think that writing comments like these is unnecessary.
 
-However, when you start working on more complex problems, it becomes **very easy to get lost in coding details**.
+However, when you start working on more complex problems, 
 
 In general, solving a programming problem involves two major parts.
 
@@ -179,61 +179,9 @@ int(...)
 use it in calculation
 ```
 
-So our original comments were not detailed enough.
-
-We should refine them.
-
-```python
-# read in input
-
-# people
-# input type: str
-# convert people to int
-
-# budget
-# input type: str
-# convert budget to int
-
-# calculate money needed for those people
-# total: int
-# total = people * 30
-```
-
-Notice what happened here.
-
-We still have not written the final code.
-
-We are only making our comments more precise.
-
----
-
-# Think in Layers
-
-When solving a programming problem, do not try to do everything at once.
-
-A useful way to think is:
-
-```text
-Layer 1
-Understand the problem
-        ↓
-Layer 2
-Determine the meaning and type of the data
-        ↓
-Layer 3
-Refine the logic
-        ↓
-Layer 4
-Translate the finished logic into code
-```
-
-Do not force your brain to solve both at the same time.
-
 ---
 
 # Python Makes Type Assumptions Easy
-
-This is especially important in Python.
 
 In languages such as C++, the type is usually written explicitly when a variable is declared:
 
@@ -267,8 +215,6 @@ So when planning your solution, it is useful to annotate the expected type of im
 # total: int
 # result: int
 ```
-
-This makes the next stage much clearer.
 
 ---
 
@@ -326,16 +272,13 @@ Now one variable carries both the numerical result and useful logical informatio
 That makes the later decision much easier.
 
 ---
-
-# Read the Restrictions Carefully
+# Look for Constraint Words
 
 The first time we read the problem, we only extracted the general idea. But problem descriptions often contain **small words that impose important restrictions**.
 
 For example:
 
 > "N is the **nonnegative** amount left or missing."
-
-The word **nonnegative** matters.
 
 So our comments need to become more precise again.
 
@@ -350,7 +293,38 @@ So our comments need to become more precise again.
 #     missing amount = -result
 ```
 
-Again, we are still improving the logic before writing the final code.
+Restrictions are often adjectives, adverbs, numerical limits, or short phrases such as:
+
+```text
+nonnegative
+exactly
+at most
+at least
+strictly greater than
+no more than
+one space
+on separate lines
+inclusive
+exclusive
+```
+Move them into your comments.
+
+For example:
+
+```python
+# people: integer from 1 to 4
+# budget: integer from 0 to 500
+
+# lunch costs exactly 30 per person
+
+# output N must be nonnegative
+
+# exactly enough money counts as affordable
+
+# use exactly one space after the colon
+```
+
+Now the comments contain not only the general logic, but also the important constraints.
 
 ---
 
@@ -397,52 +371,9 @@ n    vs n - 1
 first element
 last element
 empty input
-exactly zero
 ```
 
 A solution may be logically correct in general and still fail because of one boundary case.
-
----
-
-# Look for Constraint Words
-
-When reading a problem, pay special attention to words that restrict the meaning of the task.
-
-They are often adjectives, adverbs, numerical limits, or short phrases such as:
-
-```text
-nonnegative
-exactly
-at most
-at least
-strictly greater than
-no more than
-one space
-on separate lines
-inclusive
-exclusive
-```
-
-These words may look small, but they frequently determine whether your solution is accepted or rejected.
-
-Move them into your comments.
-
-For example:
-
-```python
-# people: integer from 1 to 4
-# budget: integer from 0 to 500
-
-# lunch costs exactly 30 per person
-
-# output N must be nonnegative
-
-# exactly enough money counts as affordable
-
-# use exactly one space after the colon
-```
-
-Now the comments contain not only the general logic, but also the important constraints.
 
 ---
 
