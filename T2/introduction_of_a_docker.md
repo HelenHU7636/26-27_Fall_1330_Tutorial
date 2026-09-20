@@ -19,7 +19,7 @@ After the installation is complete, **open Docker Desktop**.
 
 **Docker Desktop needs to be running when you use Docker commands.**
 
----
+**Skip Signing i**
 
 ### 2. Check Whether Docker Is Installed Correctly
 
@@ -109,28 +109,8 @@ docker compose build
 
 Docker will read the `dockerfile` and automatically prepare the environment required by the program.
 
-For example, the Docker environment for this project includes:
-
-* Python 3.13
-* required Linux tools
-* the Python libraries listed in `requirements.txt`
-
-Therefore, you do not need to install all these libraries manually on your own computer.
-
-The process can be understood as:
-
-```text
-Dockerfile
-    ↓
-Docker reads the instructions
-    ↓
-Docker Image
-```
-
-A Docker image can be thought of as a prepared template for the programming environment.
-
-The first build may take some time because Docker needs to download and install the required components.
-
+![alt text](image-8.png)
+![alt text](image-9.png)
 ---
 
 ### 6. Run the Program Inside a Container
@@ -141,26 +121,12 @@ After the image has been built successfully, run:
 docker compose run --rm game
 ```
 
-Docker will create a **container** from the image and run the program inside that container.
-
-The overall process can be understood as:
-
-```text
-Dockerfile
-    ↓
-Image
-    ↓
-Container
-    ↓
-Run your code
-```
-
 In this project, the container will run:
 
 ```text
 tic_tac_toe.py
 ```
-
+![alt text](image-10.png)
 ---
 
 ### 7. Edit Your Code
@@ -199,34 +165,450 @@ again to test the updated program.
 
 ---
 
-### Summary
+# Play, Inspect, Change
 
-The complete setup process is:
+Now that the Docker environment is running successfully, we will explore the provided Tic-Tac-Toe program.
 
-```text
-1. Install Docker Desktop
+The aim of this activity is **not** to understand the entire program. Some parts of the code use functions and libraries that we have not studied yet.
 
-2. Start Docker Desktop
-
-3. Unzip the project files
-
-4. Open the project_docker directory in the terminal
-
-5. Build the Docker image:
-
-   docker compose build
-
-6. Run the program inside the container:
-
-   docker compose run --rm game
-
-7. Edit project/tic_tac_toe.py and run the command again to test your code
-```
-
-The most important relationship to remember is:
+Instead, focus on three things:
 
 ```text
-Dockerfile → Image → Container → Run Code
+Play → Inspect → Change
 ```
 
-The `Dockerfile` defines the environment. Docker uses it to build an **image**, and the image is then used to create a **container**. Your program is finally executed inside this container, where the required programming environment has already been prepared.
+---
+
+## 1. Play the Game
+
+Start the game with:
+
+```bash
+docker compose run --rm game
+```
+
+You are `X`, and the computer is `O`.
+
+Use the number keys `1`–`9` to select a square.
+
+Try playing one complete game first.
+
+### Try some unusual input
+
+While playing, deliberately try something invalid.
+
+For example:
+
+* press a letter instead of a number;
+* press `0`;
+* select a square that is already occupied.
+
+Observe how the program responds.
+
+Ask yourself:
+
+> Does invalid input crash the program?
+
+> How does the program prevent an invalid move from changing the board?
+
+You do not need to understand the implementation yet. Simply observe the behaviour.
+
+---
+
+## 2. Try Resizing the Terminal
+
+While the game is running, make the terminal window smaller.
+
+The program requires approximately:
+
+```text
+80 × 24
+```
+
+characters of terminal space.
+
+If the window becomes too small, the game should pause and ask you to resize the terminal.
+
+Resize the window again and observe what happens.
+
+This is another example of a program responding to conditions in its environment rather than assuming that everything will always be valid.
+
+---
+
+## 3. Quit the Game
+
+Press:
+
+```text
+q
+```
+
+to quit.
+
+Now open:
+
+```text
+project/tic_tac_toe.py
+```
+
+in VS Code or another editor.
+
+You do **not** need to understand the entire file.
+
+For now, simply inspect it.
+
+---
+
+# Inspect
+
+## 4. Find the Computer Move Logic
+
+Search for:
+
+```python
+def computer_move(board):
+```
+
+You should find a function similar to this:
+
+```python
+def computer_move(board):
+    """Win if possible, block an immediate loss, then choose a free square."""
+    choices = available_moves(board)
+
+    if not choices:
+        raise ValueError("There are no free squares.")
+
+    for mark in ("O", "X"):
+        for move in choices:
+            trial = board.copy()
+            trial[move] = mark
+
+            if winner(trial) == mark:
+                return move
+
+    if 4 in choices:
+        return 4
+
+    return random.choice(choices)
+```
+
+Do not worry if some of this code is unfamiliar.
+
+At the moment, we only need to understand the overall idea:
+
+```text
+computer_move(board)
+        ↓
+decides which square the computer should choose
+```
+
+The rest of the game will call this function whenever the computer needs to make a move.
+
+---
+
+## 5. Find the Available Moves
+
+Now find:
+
+```python
+def available_moves(board):
+```
+
+It returns the positions on the board that are still empty.
+
+Conceptually:
+
+```text
+Board:
+
+X |   | O
+---------
+  | X |
+---------
+O |   |
+
+Available squares:
+2, 4, 6, 8
+```
+
+The exact representation inside the program is slightly different, but the main idea is simple:
+
+> `available_moves(board)` gives us the moves that the computer is actually allowed to make.
+
+---
+
+# Change
+
+## 6. Make One Small Visible Change
+
+Before changing the computer strategy, make one simple visible edit to the program.
+
+For example, find:
+
+```python
+"TIC-TAC-TOE"
+```
+
+and change it to something easy to recognise, such as:
+
+```python
+"ENGG1330 TIC-TAC-TOE"
+```
+
+Save the file.
+
+Now run:
+
+```bash
+docker compose run --rm game
+```
+
+again.
+
+You should immediately see your change.
+
+### Important
+
+Notice what we did **not** run:
+
+```bash
+docker compose build
+```
+
+We did not rebuild the Docker image.
+
+Why?
+
+The project directory on your computer is connected directly to:
+
+```text
+/workspace
+```
+
+inside the container.
+
+Therefore:
+
+```text
+Edit file on your computer
+        ↓
+Container sees the updated file
+        ↓
+Run the program again
+```
+
+A normal change to `tic_tac_toe.py` does not require rebuilding the image.
+
+---
+
+# Optional Extension: Random Computer Moves
+
+Now we will change how the computer chooses its move.
+
+The current computer is not completely random.
+
+It tries to:
+
+```text
+win
+↓
+block you
+↓
+take the centre
+↓
+choose another available square
+```
+
+For this exercise, we want something much simpler:
+
+> Every currently available square should have an equal probability of being selected.
+
+---
+
+## 7. Think Before Coding
+
+Suppose there are four available squares.
+
+What should the probability of choosing each square be?
+
+```text
+1 / 4
+```
+
+If there are six available squares:
+
+```text
+1 / 6
+```
+
+In general:
+
+```text
+Probability of each move
+=
+1 / number of available moves
+```
+
+Now consider this:
+
+```python
+random.choice(...)
+```
+
+`random.choice()` chooses one element randomly from a sequence.
+
+So what sequence should we give it?
+
+---
+
+### Would this work?
+
+```python
+random.choice(range(9))
+```
+
+Think about it before continuing.
+
+This chooses uniformly from **all nine squares**.
+
+But some of those squares may already be occupied.
+
+For example:
+
+```text
+X | O |
+---------
+  | X |
+---------
+O |   |
+```
+
+Choosing randomly from all nine positions could select a square that already contains `X` or `O`.
+
+So the problem is not simply:
+
+> Choose a random square.
+
+The real problem is:
+
+> Choose randomly from the **valid available squares**.
+
+---
+
+## 8. Modify `computer_move`
+
+We already have a function that gives us exactly those valid moves:
+
+```python
+available_moves(board)
+```
+
+Therefore, the simplest uniformly random strategy is:
+
+```python
+return random.choice(available_moves(board))
+```
+
+Replace the decision logic inside `computer_move()` with:
+
+```python
+def computer_move(board):
+    return random.choice(available_moves(board))
+```
+
+Save the file.
+
+---
+
+## 9. Test the Modified Program
+
+Run the game again:
+
+```bash
+docker compose run --rm game
+```
+
+Again, you do **not** need to rebuild the Docker image.
+
+Play several rounds and observe the computer.
+
+It should no longer deliberately:
+
+* block you;
+* take the centre;
+* try to win immediately.
+
+Instead, every available move has the same probability of being chosen.
+
+---
+
+# Why Does This Work?
+
+Suppose:
+
+```python
+available_moves(board)
+```
+
+returns:
+
+```python
+[1, 3, 5, 7]
+```
+
+Then:
+
+```python
+random.choice([1, 3, 5, 7])
+```
+
+chooses one of those four values.
+
+Each one has probability:
+
+```text
+1 / 4
+```
+
+If only two moves remain:
+
+```python
+[3, 7]
+```
+
+then each has probability:
+
+```text
+1 / 2
+```
+
+This is why choosing from `available_moves(board)` produces a **uniform random choice among valid moves**.
+
+---
+
+# Main Idea
+
+The important part is not the one-line solution:
+
+```python
+return random.choice(available_moves(board))
+```
+
+Instead, notice how we simplified the problem:
+
+```text
+What does the computer need to choose?
+        ↓
+A legal move
+        ↓
+Which moves are legal?
+        ↓
+available_moves(board)
+        ↓
+Choose one of them uniformly
+        ↓
+random.choice(...)
+```
+
+When solving a programming problem, try to identify exactly what set of values your answer is allowed to come from **before** deciding how to choose one.

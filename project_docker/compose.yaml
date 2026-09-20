@@ -1,0 +1,17 @@
+services:
+  game:
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: engg1330-project:2026-v03
+    working_dir: /workspace
+    volumes:
+      - ./project:/workspace
+    init: true
+    stdin_open: true
+    tty: true
+    environment:
+      TERM: xterm-256color
+      COLUMNS: "80"
+      LINES: "24"
+    network_mode: none
